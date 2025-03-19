@@ -83,6 +83,28 @@ const Chat = () => {
   const [ASSISTANT, TOOL, ERROR] = ['assistant', 'tool', 'error']
   const NO_CONTENT_ERROR = 'No content in messages object.'
 
+  const allQuestions = [
+    'Can you please help me understand what is Project Merlin?',
+    'What is ExpressRouteDirect and how is it different from ExpressRoute?',
+    'Explain Handover process in short summary?',
+    'What is NMagent Mapping Sync?',
+    'Explain LSI process in Azure Networking?',
+    'How does Azure Front Door works?'
+  ];
+
+  const getRandomQuestions = () => {
+    const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  };
+
+  const sampleQuestions = getRandomQuestions();
+
+  const handleSampleQuestionClick = (question: string) => {
+    appStateContext?.state.isCosmosDBAvailable?.cosmosDB
+      ? makeApiRequestWithCosmosDB(question)
+      : makeApiRequestWithoutCosmosDB(question);
+  };
+
   useEffect(() => {
     if (
       appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.Working &&
@@ -794,6 +816,13 @@ const Chat = () => {
                 <img src={logo} className={styles.chatIcon} aria-hidden="true" />
                 <h1 className={styles.chatEmptyStateTitle}>{ui?.chat_title}</h1>
                 <h2 className={styles.chatEmptyStateSubtitle}>{ui?.chat_description}</h2>
+                <Stack horizontal className={styles.sampleQuestionsContainer}>
+                  {sampleQuestions.map((question, index) => (
+                    <button key={index} onClick={() => handleSampleQuestionClick(question)} className={styles.sampleQuestionButton}>
+                      {question}
+                    </button>
+                  ))}
+                </Stack>
               </Stack>
             ) : (
               <div className={styles.chatMessageStream} style={{ marginBottom: isLoading ? '40px' : '0px' }} role="log">
